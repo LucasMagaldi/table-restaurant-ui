@@ -3,6 +3,8 @@ import { IoHomeOutline } from "react-icons/io5";
 import { CgNotes } from "react-icons/cg";
 import { Separator } from "../ui/separator";
 import { NavLink } from "../nav-link";
+import { AccountMenu } from "../account-menu";
+import { ThemeToggle } from "../theme-toggle";
 
 
 export function Header() {
@@ -24,6 +26,11 @@ export function Header() {
                         orders
                     </NavLink>
                 </nav>
+
+                <div className="ml-auto flex items-center gap-2">
+                    <ThemeToggle />
+                    <AccountMenu />
+                </div>
             </div>
         </div>
     )
