@@ -1,5 +1,5 @@
+import { OrderTableFilters } from "@/components/table/order-table-filters";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableRow, TableCell, TableHeader, TableHead } from "@/components/ui/table";
 import { ArrowRight, Search, X } from "lucide-react";
 
@@ -8,11 +8,7 @@ export function Orders() {
         <div className="flex flex-col gap-4">
             <h1 className="text-foreground font-bold text-lg tracking-tight">Orders</h1>
             <div className="flex flex-col gap-3">
-                <form className="flex items-center gap-2">
-                    <span>Filters:</span>
-                    <Input placeholder="Client name" className="w-[320px] h-8"/>
-                </form>
-
+                <OrderTableFilters />
                 <div className="rounded-md border">
                     <Table>
                         <TableHeader>
