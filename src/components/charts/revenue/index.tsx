@@ -51,7 +51,7 @@ import {
               />
               <Line
                 stroke={colors.violet[500]}
-                type="linear"
+                type="natural"
                 strokeWidth={2}
                 dataKey="revenue"
               />
