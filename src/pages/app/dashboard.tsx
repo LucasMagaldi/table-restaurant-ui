@@ -1,4 +1,5 @@
 import { CardItem } from "@/components/card-item";
+import { RevenueChart } from "@/components/charts/revenue";
 
 export function Dashboard() {
   return (
@@ -10,6 +11,9 @@ export function Dashboard() {
         <CardItem />
         <CardItem />
         <CardItem />
+      </div>
+      <div className="grid grid-cols-9 gap-4">
+        <RevenueChart />
       </div>
     </div>
   )
