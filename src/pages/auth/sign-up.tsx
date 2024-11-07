@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { registerRestaurant } from "@/hooks/api-authentication";
+import { useMutation } from "@tanstack/react-query";
 
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +21,9 @@ type SignUpForm = z.infer<typeof signUpFormSchema>
 
 export function SignUp() {
     const navigate = useNavigate()
+    const { mutateAsync: registerRestaurantFn } = useMutation({
+        mutationFn: registerRestaurant
+    })
 
     const { 
         register,
@@ -31,13 +36,20 @@ export function SignUp() {
     async function handleSignUp(data: SignUpForm) {
         try {
             await new Promise((resolve) => setTimeout(resolve, 2000))
+            await registerRestaurantFn({
+                email: data.email,
+                managerName: data.name,
+                phone: data.phone,
+                restaurantName: data.restaurant
+            })
 
             toast.success('Registering restaurant successfully', {
                 action: {
                     label: 'Login',
-                    onClick: () => navigate('/sign-in')
+                    onClick: () => navigate(`/sign-in?email=${data.email}`)
                 }
             })
+            navigate(`/sign-in?email=${data.email}`)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
             toast.error('Error while registering restaurant')

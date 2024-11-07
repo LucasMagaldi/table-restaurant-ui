@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
+import { signIn } from "@/hooks/api-authentication";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from 'zod'
 
@@ -14,15 +16,25 @@ const signInFormSchema = z.object({
 type SignInForm = z.infer<typeof signInFormSchema>
 
 export function SignIn() {
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const { mutateAsync: signInFn } = useMutation({
+    mutationFn: signIn
+  })
+
   const { 
     register, 
     handleSubmit, 
     formState: { isSubmitting }
-  } = useForm<SignInForm>()
+  } = useForm<SignInForm>({
+    defaultValues: {
+      email: searchParams.get('email') ?? ''
+    }
+  })
 
   async function handleSignIn(data: SignInForm) {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      await signInFn({ email: data.email })
       toast.success('We sent the authentication link to your email', {
         action: {
           label: 'Resent', 
@@ -31,6 +43,7 @@ export function SignIn() {
           }
         }
       })
+      navigate('/')
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error('Invalid credentials')
@@ -38,7 +51,7 @@ export function SignIn() {
   }
 
   return (
-    <div className="p-8">
+    <div className="flex flex-col">
       <div className="flex flex-col w-[350px] justify-center gap-6">
         <div className="flex flex-col text-center">
           <h1 className="font-semibold text-2xl tracking-tighter">

@@ -2,9 +2,22 @@ import { Building, ChevronDown, LogOut } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '../ui/dropdown-menu'
 import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
 import { Button } from '../ui/button'
+import { useQuery } from '@tanstack/react-query'
+import { getUserProfile } from '@/hooks/api-user'
+import { getRestaurantInfo } from '@/hooks/api-restaurant'
 
 
 export function AccountMenu() {
+    const { data: userProfile } = useQuery({
+        queryKey: ['user-profile'],
+        queryFn: getUserProfile
+    })
+
+    const { data: restaurantInfo } = useQuery({
+        queryKey: ['restaurant-info'],
+        queryFn: getRestaurantInfo
+    })
+
     return (    
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -12,7 +25,7 @@ export function AccountMenu() {
                     variant="outline"
                     className='flex items-center gap-2'
                 >
-                    Table UI
+                    {restaurantInfo?.name}
                     <ChevronDown className="h-4 w-4" />
                 </Button>
             </DropdownMenuTrigger>
@@ -20,11 +33,11 @@ export function AccountMenu() {
                 <DropdownMenuLabel
                     className='flex flex-col'
                 >
-                    <span>Lucas Magaldi</span>
+                    <span>{userProfile?.name}</span>
                     <span
                         className='text-muted-foreground text-xs font-normal'
                     >
-                        lucas.magaldi@hotmail.com
+                        {userProfile?.email}
                     </span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
