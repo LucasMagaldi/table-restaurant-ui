@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from "../ui/button";
 import { DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader } from "../ui/dialog";
 import { Input } from "../ui/input";
@@ -6,10 +7,11 @@ import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { updateUserProfile } from "@/hooks/api-user";
+import { getRestaurantInfo } from "@/hooks/api-restaurant";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 const editProfileSchema = z.object({
     name: z.string(),
     description: z.string()
@@ -18,16 +20,38 @@ const editProfileSchema = z.object({
 type EditProfileForm = z.infer<typeof editProfileSchema>
 
 export function EditProfileModal() {
+    const queryClient = useQueryClient()
+
+    const { data: restaurantInfo } = useQuery({
+        queryKey: ['restaurant-info'],
+        queryFn: getRestaurantInfo
+    })
+
     const {
         register,
         handleSubmit,
         formState: { isSubmitting }
     } = useForm<EditProfileForm>({
-
+        resolver: zodResolver(editProfileSchema),
+        values: {
+            name: restaurantInfo?.name ?? '',
+            description: restaurantInfo?.description ?? '',
+        }
     })
 
     const { mutateAsync: updateUserProfileFn } = useMutation({
-        mutationFn: updateUserProfile
+        mutationFn: updateUserProfile,
+        onSuccess(_, { name, description }) {
+            const cache = queryClient.getQueryData(['restaurant-info'])
+
+            if(cache) {
+                queryClient.setQueryData(['restaurant-info'], {
+                    ...cache,
+                    name,
+                    description
+                })
+            }
+        }
     })
 
     async function handleUpdateProfile(data: EditProfileForm) {
