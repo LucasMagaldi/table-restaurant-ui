@@ -2,8 +2,32 @@ import { Pagination } from "@/components/pagination";
 import { OrderTableFilters } from "@/components/table/order-table-filters";
 import { OrderTableRow } from "@/components/table/order-table-row";
 import { Table, TableBody, TableRow, TableHeader, TableHead } from "@/components/ui/table";
+import { getOrders } from "@/hooks/api-orders";
+import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
+import { z } from 'zod'
 
 export function Orders() {
+    const [searchParams, setSearchParams] = useSearchParams()
+
+    const pageIndex = z.coerce
+        .number()
+        .transform((page) => page -1)
+        .parse(searchParams.get('page') ?? '1')
+
+    const { data: getOrdersFn } = useQuery({
+        queryKey: ['orders', pageIndex],
+        queryFn: () => getOrders({ pageIndex })
+    })
+
+    function handlePagination(pageIndex: number) {
+        setSearchParams((state) => {
+            state.set('page', (pageIndex + 1).toString())
+
+            return state
+        })
+    }
+    
     return (
         <div className="flex flex-col gap-4">
             <h1 className="text-foreground font-bold text-lg tracking-tight">Orders</h1>
@@ -18,21 +42,27 @@ export function Orders() {
                                 <TableHead className="w-[180px]">Created at</TableHead>
                                 <TableHead className="w-[140px]">Status</TableHead>
                                 <TableHead>Client</TableHead>
-                                <TableHead className="w-[140px]">Order cost</TableHead>
+                                <TableHead className="w-[140px]">(R$) Order cost</TableHead>
                                 <TableHead className="w-[164px]"></TableHead>
                                 <TableHead className="w-[132px]"></TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {Array.from({ length: 10 }).map((_, i) => {
+                            {getOrdersFn?.orders.map((order) => {
                                 return (
-                                    <OrderTableRow />
+                                    <OrderTableRow key={order.orderId} order={order}/>
                                 )
                             })}
                         </TableBody>
                     </Table>
                 </div>
-                <Pagination pageIndex={0} perPage={10} totalItems={150}/>
+                {getOrdersFn && (
+                    <Pagination 
+                        pageIndex={pageIndex} 
+                        perPage={getOrdersFn?.meta.perPage} 
+                        totalItems={getOrdersFn?.meta.totalCount}
+                        onPageChange={handlePagination}/>                    
+                )}
             </div>
         </div>
     )
