@@ -24,3 +24,7 @@ export async function registerRestaurant({
  } : RegisterRestaurantBodySchema) {
     await api.post('/restaurants', { email, managerName, phone, restaurantName })
 }
+
+export async function signOut() {
+    await api.post('/sign-out')
+}
