@@ -1,10 +1,11 @@
 import { TableRow, TableCell } from "@/components/ui/table";
-import { ArrowRight, Search, X } from "lucide-react";
+import { ArrowRight, BookPlusIcon, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Dialog, DialogTrigger } from "../ui/dialog";
 import { OrderDetail } from "../dialog/order-detail";
 import { formatDistanceToNow } from "date-fns"
 import { ptBR } from "date-fns/locale"
+import { useState } from "react";
 
 
 interface IOrderTableRowProps {
@@ -18,17 +19,19 @@ interface IOrderTableRowProps {
 }
 
 export function OrderTableRow({ order } : IOrderTableRowProps) {
+    const [isDetailOpen, setIsDetailOpen] = useState(false)
+
     return (
         <TableRow>
             <TableCell>
-                <Dialog>
+                <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
                     <DialogTrigger asChild>
                     <Button variant="outline">
-                        <Search className="h-3 w-3" />
+                        <BookPlusIcon className="h-3 w-3" />
                         <span className="sr-only">Detalhes do pedido</span>
                     </Button>
                     </DialogTrigger>
-                    <OrderDetail />
+                    <OrderDetail isOpen={isDetailOpen} orderId={order.orderId}/>
                 </Dialog>
             </TableCell>
             <TableCell className="font-mono text-xs font-medium">
