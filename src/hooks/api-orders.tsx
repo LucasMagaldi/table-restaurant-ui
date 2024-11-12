@@ -46,6 +46,10 @@ export interface GetOrderDetailsResponse {
   }[]
 }
 
+interface CancelOrderParams {
+  orderId: string
+}
+
 export async function getOrders({ pageIndex, customerName, orderId, status } : GetOrdersQuery) {
     const response = await api.get<GetOrdersResponse>('/orders', {
         params: {
@@ -63,4 +67,8 @@ export async function getOrderDetail({ orderId } : GetOrderDetailsParams) {
   const response = await api.get<GetOrderDetailsResponse>(`/orders/${orderId}`)
 
   return response
+}
+
+export async function cancelOrder({ orderId } : CancelOrderParams) {
+  await api.patch(`/order/${orderId}/cancel`)
 }
